@@ -1,0 +1,31 @@
+:host {
+	display: block;
+}
+
+.noselect {
+	user-select: none;
+	pointer-events: none;
+	cursor: default;
+}
+
+input {
+	background-color: transparent;
+	border: none;
+	width: 2ch;
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 1rem;
+	padding: 0;
+	block-size: 1rem;
+}
+
+.hour {
+	width: 1ch;
+}
+
+input:hover, input:focus {
+	background-color: lightblue;
+}
+
+.hidden {
+	display: none;
+}
