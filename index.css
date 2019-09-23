@@ -1,8 +1,10 @@
 body {
 	display: flex;
 	align-items: center;
+	background-color: #efefef;
 	margin-top: 5rem;
 	flex-direction: column;
+	font-family: 'Ubuntu', sans-serif;
 }
 
 audio {
@@ -16,6 +18,7 @@ audio:focus {
 }
 
 table {
+	border-collapse: collapse;
 	width: 60%;
 	padding:0;
 	outline: 1px solid black;
@@ -26,15 +29,23 @@ h1 {
 	margin-bottom: 2rem;
 }
 
+tr {
+	background-color: lightyellow;
+}
+
+tr:nth-child(even) {
+	background-color: #fffff3;
+}
+
 th {
+	color: white;
 	height: 2rem;
-	background-color: greenyellow;
+	background-color: #1124ff;
 	outline: 1px solid black;
 }
 
 td {
 	height: 2rem;
-	background-color: lightyellow;
 	outline: 1px solid black;
 	padding: 0;
 }
