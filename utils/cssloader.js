@@ -33,9 +33,11 @@ export default class CssLoader {
 		link.href = this.path
 		link.onload = _ => this.unlock()
 	
-		this.promise = new Promise(resolve => {
-			this.resolve = resolve
-		})
+		if (!this.promise) {
+			this.promise = new Promise(resolve => {
+				this.resolve = resolve
+			})
+		}
 		
 		caller.shadowRoot.appendChild(link)
 	}

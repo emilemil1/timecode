@@ -2,10 +2,12 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="index.css">
 		<script type="module" src="index.js"></script>
+		<meta charset="UTF-8">
 	</head>
 	<body>
 		<h1 id="t1">Drop a file containing audio to begin</h1>
 		<audio controls controlsList="nodownload" class="hidden"></audio>
+		<div id="edit-indicator-container" class="hidden"><div id="edit-indicator" class=><div id="arrow">➤</div></div></div>
 		<table >
 			<colgroup>
 				<col class="col1">
@@ -18,7 +20,8 @@
 				<th></th>
 			</tr>
 		</table>
-		<h2 id="t2" class="hidden">Hit [Spacebar] or [Enter] to add a timecode</h2>
+		<h2 id="t2" class="hidden"><span>Hit [Spacebar] or [Enter] to add a timecode</span><br><span>Or drop a text file with a tracklist</span></h2>
+		<h2 id="edit-tip" class="hidden"><span>Hit [Spacebar] or [Enter] to adjust the selected timecode</span><br><span>Hit [ESC] to stop</span></h2>
 		<div id="generate" class="generate hidden">
 			Generate!
 		</div>

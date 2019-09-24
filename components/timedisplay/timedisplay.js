@@ -28,6 +28,9 @@ export default class TimeDisplay extends HTMLElement {
 	}
 
 	async construct() {
+		let resolver
+		this.loaded = new Promise(resolve => resolver = resolve)
+
 		const shadow = this.attachShadow({mode: "open"})
 		
 		shadow.innerHTML = /*html*/`
@@ -41,7 +44,6 @@ export default class TimeDisplay extends HTMLElement {
 		`.replace(/[\n\t]/g,"")
 
 		css.load(this)
-		
 		await css.wait()
 
 		this.hourElement = shadow.children[0]
@@ -51,6 +53,15 @@ export default class TimeDisplay extends HTMLElement {
 		this.elements = [this.hourElement, this.minuteElement, this.secondElement, this.millisecondElement]
 
 		this.bind()
+		resolver()
+	}
+
+	set(time) {
+		this.init(time)
+		this.elements[0].value = this.getHours()
+		this.elements[1].value = this.getMinutes()
+		this.elements[2].value = this.getSeconds()
+		this.elements[3].value = this.getMilliseconds()
 	}
 
 	bind() {

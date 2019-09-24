@@ -2,14 +2,41 @@ import TimeDisplay from "./components/timedisplay/timedisplay.js"
 
 let init = false
 let table
-let t1, t2
+let t1, t2, editTip
 let generate
 let audio
+let editing
+let editIndicator
+
+let loadTracklist = async file => {
+	if (!init) return
+	while (table.rows.length > 1) {
+		table.deleteRow(1)
+	}
+	let text = await file.text()
+	let rows = text.split("\n")
+	audio.currentTime = 0
+	for (let i = 0; i < rows.length; i++) {
+		let row = rows[i]
+		if (row.match(/^\d+\.? /)) {
+			rows[i] = row.substring(row.indexOf(" ")+1)
+		}
+		addRow()
+	}
+
+	for (let i = 1; i < table.rows.length; i++) {
+		table.rows[i].children[1].children[0].value = rows[i-1]
+	}
+}
 
 let filedrop = (event) => {
 	event.preventDefault()
 	for (let item of event.dataTransfer.items) {
 		if (item.kind !== "file") return
+		if (item.type === "text/plain") {
+			loadTracklist(item.getAsFile())
+			return
+		}
 		audio.src = URL.createObjectURL(item.getAsFile())
 		audio.classList.remove("hidden")
 		t2.classList.remove("hidden")
@@ -42,9 +69,15 @@ let addRow = _ => {
 	let namecell = row.insertCell(1)
 	let name = document.createElement("input")
 	name.type = "text"
+	name.onpaste = event => onPaste(event, i)
 	namecell.appendChild(name)
 
 	let controlcell = row.insertCell(2)
+	let edit = document.createElement("div")
+	edit.classList.add("edit")
+	edit.innerHTML = "\u270E"
+	edit.onclick = _ => editMode(i)
+	controlcell.appendChild(edit)
 	let remove = document.createElement("div")
 	remove.classList.add("remove")
 	remove.innerHTML = "X"
@@ -111,9 +144,27 @@ let generateFile = _ => {
 }
 
 let keydown = event => {
+	if (event.code === "Escape" && editing !== undefined) {
+		editing = undefined
+		editIndicator.parentElement.classList.add("hidden")
+		editTip.classList.add("hidden")
+	}
 	if (event.code !== "Space" && event.code !== "Enter") return
 
-	addRow()
+	if (editing !== undefined) {
+		setRow(audio.currentTime, editing)
+		editTip.classList.add("hidden")
+		if (editing !== table.rows.length - 1) {
+			editing++
+			editIndicator.style.setProperty("--editOffset", editing * 34 + "px")
+		}
+		else {
+			editing = undefined
+			editIndicator.parentElement.classList.add("hidden")
+		}
+	} else {
+		addRow()
+	}
 
 	event.preventDefault()
 }
@@ -122,8 +173,10 @@ window.onload = _ => {
 	table = document.querySelector("table")
 	t1 = document.querySelector("#t1")
 	t2 = document.querySelector("#t2")
+	editTip = document.querySelector("#edit-tip")
 	audio = document.querySelector("audio")
 	generate = document.querySelector("#generate")
+	editIndicator = document.querySelector("#edit-indicator")
 
 	audio.volume = 0.5
 	audio.addEventListener("focus", e => e.target.blur())
@@ -131,4 +184,32 @@ window.onload = _ => {
 	document.documentElement.addEventListener("dragover", event => event.preventDefault())
 	document.documentElement.addEventListener("keydown", keydown)
 	generate.addEventListener("click", generateFile)
+}
+
+let editMode = index => {
+	editing = index
+	editTip.classList.remove("hidden")
+	editIndicator.style.setProperty("--editOffset", index * 34 + "px")
+	editIndicator.parentElement.classList.remove("hidden")
+
+	return
+}
+
+let setRow = (value, row) => {
+	table.rows[row].children[0].children[0].set(value)
+}
+
+let onPaste = (event, index) => {
+	let text = event.clipboardData.getData('text');
+	let rows = text.split("\n")
+	if (rows.length > 1) event.preventDefault()
+	else return
+	for (let i = 0; i < rows.length; i++) {
+		if (index > table.rows.length-1) break
+		if (rows[i].match(/^\d+\.? /)) {
+			rows[i] = rows[i].substring(rows[i].indexOf(" ")+1)
+		}
+		table.rows[index].children[1].children[0].value = rows[i]
+		index++
+	}
 }
